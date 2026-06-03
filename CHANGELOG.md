@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.1](https://github.com/capacitor-community/photoviewer/compare/v8.0.0...v8.0.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **android:** use proguard-android-optimize.txt for AGP 9.x compatibility ([#93](https://github.com/capacitor-community/photoviewer/issues/93)) ([3629457](https://github.com/capacitor-community/photoviewer/commit/3629457ba6c4280594cb47bed2c53a67c59bf358))
+
 ## [8.0.0](https://github.com/capacitor-community/photoviewer/compare/v7.1.0...v8.0.0) (2026-01-12)
 
 
