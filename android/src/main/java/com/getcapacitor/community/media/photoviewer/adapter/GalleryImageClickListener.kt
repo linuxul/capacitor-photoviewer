@@ -1,6 +1,6 @@
 package com.getcapacitor.community.media.photoviewer.adapter
 
-interface GalleryImageClickListener {
+public interface GalleryImageClickListener {
 
-    fun onClick(position: Int)
+    public fun onClick(position: Int)
 }

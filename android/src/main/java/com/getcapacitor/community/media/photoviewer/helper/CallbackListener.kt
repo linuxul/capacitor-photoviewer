@@ -1,5 +1,5 @@
 package com.getcapacitor.community.media.photoviewer.helper
 
-interface CallbackListener {
-    fun onMenuToggle()
+public interface CallbackListener {
+    public fun onMenuToggle()
 }

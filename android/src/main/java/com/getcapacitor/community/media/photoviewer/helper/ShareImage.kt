@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.StrictMode
 import android.view.Gravity
 import android.widget.Toast
@@ -19,18 +18,15 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class ShareImage {
+public class ShareImage {
     private var tmpImage: File? = null
 
-    fun shareImage(image: Image, appId: String, appContext: Context,
-                          compressionQuality: Double) {
-        if (Build.VERSION.SDK_INT >= 24) {
-            try {
-                val m = StrictMode::class.java.getMethod("disableDeathOnFileUriExposure")
-                m.invoke(null)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    public fun shareImage(image: Image, appId: String, appContext: Context, compressionQuality: Double) {
+        try {
+            val m = StrictMode::class.java.getMethod("disableDeathOnFileUriExposure")
+            m.invoke(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         // convert TouchImageView to Bitmap File and share
         deleteTmpImage()
@@ -40,8 +36,11 @@ class ShareImage {
     private fun shareIntentCreation(appId: String, appContext: Context) {
         // create the shareIntent
         try {
-            val uri: Uri = FileProvider.getUriForFile(appContext,
-                "$appId.fileprovider", tmpImage!!)
+            val uri: Uri = FileProvider.getUriForFile(
+                appContext,
+                "$appId.fileprovider",
+                tmpImage!!
+            )
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.type = "\"image/*\""
@@ -49,21 +48,19 @@ class ShareImage {
             shareIntent.clipData = ClipData.newRawUri(null, uri)
             shareIntent.addFlags(
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                    Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+            )
 
             appContext.startActivity(Intent.createChooser(shareIntent, "Share image via"))
-
         } catch (e: java.lang.Exception) {
             val toast = Toast.makeText(appContext, e.message, Toast.LENGTH_SHORT)
             toast.setGravity(Gravity.TOP, 0, 50)
             toast.show()
             e.printStackTrace()
         }
-
     }
-    private fun createTmpImageAndShare(image: Image, compressionQuality: Double,
-                                       appId: String, appContext: Context) {
+    private fun createTmpImageAndShare(image: Image, compressionQuality: Double, appId: String, appContext: Context) {
         val fileName: String = "share_image_" + System.currentTimeMillis() + ".png"
         tmpImage = File(appContext.filesDir, fileName)
         val mImageToBeLoaded = ImageToBeLoaded()
@@ -99,7 +96,6 @@ class ShareImage {
                 override fun onLoadCleared(placeholder: Drawable?) {
                 }
             })
-
     }
     private fun deleteTmpImage() {
         if (tmpImage != null) {
@@ -107,7 +103,5 @@ class ShareImage {
             println("in onDestroy $path")
             tmpImage!!.delete()
         }
-
     }
-
 }

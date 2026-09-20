@@ -1,6 +1,6 @@
 package com.getcapacitor.community.media.photoviewer.fragments
 
-//import android.widget.Toast
+// import android.widget.Toast
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
@@ -22,55 +22,60 @@ import com.getcapacitor.community.media.photoviewer.adapter.Image
 import com.getcapacitor.community.media.photoviewer.databinding.MainFragmentBinding
 import com.getcapacitor.community.media.photoviewer.helper.BackgroundColor
 
-class MainFragment : Fragment() , GalleryImageClickListener {
-    private val TAG = "MainFragment"
+public class MainFragment :
+    Fragment(),
+    GalleryImageClickListener {
+    private val logTag = "MainFragment"
     private var mainFragmentBinding: MainFragmentBinding? = null
     private var spanCount = 3
     private var backgroundColor: String = "black"
 
     private var imageList = ArrayList<Image>()
     private var options = JSObject()
-    lateinit var galleryAdapter: GalleryImageAdapter
-    var recyclerViewLayoutManager: RecyclerView.LayoutManager? = null
-    lateinit var  appContext: Context
-    var mContainer: ViewGroup? = null
-    lateinit var mInflater: LayoutInflater
+    public lateinit var galleryAdapter: GalleryImageAdapter
+    public var recyclerViewLayoutManager: RecyclerView.LayoutManager? = null
+    public lateinit var appContext: Context
+    public var mContainer: ViewGroup? = null
+    public lateinit var mInflater: LayoutInflater
 
-    fun setImageList(imageList: ArrayList<Image>) {
+    public fun setImageList(imageList: ArrayList<Image>) {
         this.imageList = imageList
     }
-    fun setOptions(options: JSObject) {
+    public fun setOptions(options: JSObject) {
         this.options = options
-        if(this.options.has("spancount")) this.spanCount = this.options
-            .getInt("spancount")
-        if(this.options.has("backgroundcolor")) backgroundColor = this.options
-            .getString("backgroundcolor").toString()
+        if (this.options.has("spancount")) {
+            this.spanCount = this.options
+                .getInt("spancount")
+        }
+        if (this.options.has("backgroundcolor")) {
+            backgroundColor = this.options
+                .getString("backgroundcolor").toString()
+        }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mInflater = inflater
         if (container != null) {
-            mContainer  = container
+            mContainer = container
             val view: View = initializeView()
-            activity?.runOnUiThread( java.lang.Runnable {
-                view.isFocusableInTouchMode = true;
-                view.requestFocus();
-                view.setOnKeyListener(object: View.OnKeyListener {
-                    override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
-                        // if the event is a key down event on the enter button
-                        if (event.action == KeyEvent.ACTION_DOWN &&
-                            keyCode == KeyEvent.KEYCODE_BACK
-                        ) {
-                            backPressed()
-                            return true
+            activity?.runOnUiThread(
+                java.lang.Runnable {
+                    view.isFocusableInTouchMode = true
+                    view.requestFocus()
+                    view.setOnKeyListener(object : View.OnKeyListener {
+                        override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                            // if the event is a key down event on the enter button
+                            if (event.action == KeyEvent.ACTION_DOWN &&
+                                keyCode == KeyEvent.KEYCODE_BACK
+                            ) {
+                                backPressed()
+                                return true
+                            }
+                            return false
                         }
-                        return false
-                    }
-                })
-            })
+                    })
+                }
+            )
 
             return view
         }
@@ -89,18 +94,22 @@ class MainFragment : Fragment() , GalleryImageClickListener {
         // init recyclerview
         appContext = this.requireContext()
         val orientation: Int = resources.configuration.orientation
-        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Log.d(TAG, "orientation Portrait")
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.d(logTag, "orientation Portrait")
         } else {
-            Log.d(TAG, "orientation Landscape")
+            Log.d(logTag, "orientation Landscape")
         }
         recyclerViewLayoutManager = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             GridLayoutManager(appContext, spanCount, GridLayoutManager.VERTICAL, false)
         } else {
-            GridLayoutManager(appContext, spanCount + 1,
-                GridLayoutManager.VERTICAL, false)
+            GridLayoutManager(
+                appContext,
+                spanCount + 1,
+                GridLayoutManager.VERTICAL,
+                false
+            )
         }
-        binding.recyclerView.layoutManager = recyclerViewLayoutManager;
+        binding.recyclerView.layoutManager = recyclerViewLayoutManager
         binding.recyclerView.adapter = galleryAdapter
         galleryAdapter.notifyDataSetChanged()
 
@@ -109,12 +118,12 @@ class MainFragment : Fragment() , GalleryImageClickListener {
     private fun postNotification() {
         var info: MutableMap<String, Any> = mutableMapOf()
         info["result"] = true
-        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info);
+        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info)
     }
 
     private fun backPressed() {
         postNotification()
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit();
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 
     override fun onDestroyView() {
@@ -131,15 +140,15 @@ class MainFragment : Fragment() , GalleryImageClickListener {
         galleryFragment.setOptions(options)
 
         val fragmentTransaction = parentFragmentManager.beginTransaction()
-        galleryFragment.setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme);
+        galleryFragment.setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme)
         galleryFragment.show(fragmentTransaction, "gallery")
-
     }
     private fun clearCache() {
-        Thread(Runnable {
-            Glide.get(appContext).clearDiskCache()
-        }).start()
+        Thread(
+            Runnable {
+                Glide.get(appContext).clearDiskCache()
+            }
+        ).start()
         Glide.get(appContext).clearMemory()
     }
-
 }

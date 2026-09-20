@@ -34,8 +34,8 @@ import com.getcapacitor.community.media.photoviewer.listeners.OnSwipeTouchListen
 import com.ortiz.touchview.TouchImageView
 import java.io.File
 
-class ImageFragment : Fragment() {
-    private val TAG = "ImageFragment"
+public class ImageFragment : Fragment() {
+    private val logTag = "ImageFragment"
     private var imageFragmentBinding: ImageFragmentBinding? = null
     private var bShare: Boolean = true
     private var maxZoomScale: Double = 3.0
@@ -53,56 +53,61 @@ class ImageFragment : Fragment() {
     private var isZoomed: Boolean = false
 
     private var options = JSObject()
-    var mContainer: ViewGroup? = null
-    lateinit var mInflater: LayoutInflater
-    lateinit var  appContext: Context
-    fun setImage(image: Image) {
+    public var mContainer: ViewGroup? = null
+    public lateinit var mInflater: LayoutInflater
+    public lateinit var appContext: Context
+    public fun setImage(image: Image) {
         this.image = image
     }
 
-    fun setStartFrom(startFrom: Int) {
+    public fun setStartFrom(startFrom: Int) {
         this.startFrom = startFrom
     }
 
-
-    fun setOptions(options: JSObject) {
+    public fun setOptions(options: JSObject) {
         this.options = options
-        if(this.options.has("share")) bShare = this.options.getBoolean("share")
-        if(this.options.has("maxzoomscale")) maxZoomScale = this.options
-            .getDouble("maxzoomscale")
-        if(this.options.has("compressionquality")) compressionQuality = this.options
-            .getDouble("compressionquality")
-        if(this.options.has("backgroundcolor")) backgroundColor = this.options
-            .getString("backgroundcolor").toString()
-        if (this.options.has("customHeaders")) customHeaders = this.options
-            .getJSObject("customHeaders")!!
+        if (this.options.has("share")) bShare = this.options.getBoolean("share")
+        if (this.options.has("maxzoomscale")) {
+            maxZoomScale = this.options
+                .getDouble("maxzoomscale")
+        }
+        if (this.options.has("compressionquality")) {
+            compressionQuality = this.options
+                .getDouble("compressionquality")
+        }
+        if (this.options.has("backgroundcolor")) {
+            backgroundColor = this.options
+                .getString("backgroundcolor").toString()
+        }
+        if (this.options.has("customHeaders")) {
+            customHeaders = this.options
+                .getJSObject("customHeaders")!!
+        }
     }
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mInflater = inflater
         if (container != null) {
-            mContainer  = container
+            mContainer = container
             mContext = container.context
             val view: View = initializeView()
-            activity?.runOnUiThread( java.lang.Runnable {
-                view.isFocusableInTouchMode = true;
-                view.requestFocus();
-                view.setOnKeyListener(object: View.OnKeyListener {
-                    override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
-                        // if the event is a key down event on the enter button
-                        if (event.action == KeyEvent.ACTION_DOWN &&
-                            keyCode == KeyEvent.KEYCODE_BACK
-                        ) {
-                            backPressed()
-                            return true
+            activity?.runOnUiThread(
+                java.lang.Runnable {
+                    view.isFocusableInTouchMode = true
+                    view.requestFocus()
+                    view.setOnKeyListener(object : View.OnKeyListener {
+                        override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                            // if the event is a key down event on the enter button
+                            if (event.action == KeyEvent.ACTION_DOWN &&
+                                keyCode == KeyEvent.KEYCODE_BACK
+                            ) {
+                                backPressed()
+                                return true
+                            }
+                            return false
                         }
-                        return false
-                    }
-                })
-
-            })
+                    })
+                }
+            )
 
             return view
         }
@@ -110,14 +115,15 @@ class ImageFragment : Fragment() {
     }
     private fun backPressed() {
         postNotification()
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit();
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
     private fun postNotification() {
         var info: MutableMap<String, Any> = mutableMapOf()
         info["result"] = true
         info["imageIndex"] = startFrom
-        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info);
+        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info)
     }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeView(): View {
         if (mContainer != null) {
@@ -130,10 +136,10 @@ class ImageFragment : Fragment() {
         val binding = ImageFragmentBinding.inflate(mInflater, mContainer, false)
         imageFragmentBinding = binding
         val orientation: Int = resources.configuration.orientation
-        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Log.d(TAG, "orientation Portrait")
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.d(logTag, "orientation Portrait")
         } else {
-            Log.d(TAG, "orientation Landscape")
+            Log.d(logTag, "orientation Landscape")
         }
         rlLayout = binding.rlTouchImage
 
@@ -142,18 +148,18 @@ class ImageFragment : Fragment() {
 
         rlMenu = binding.menuBtns
         ivTouchImage = binding.ivTouchImage
-        ivTouchImage.setOnTouchListener(object: OnSwipeTouchListener(mContext) {
+        ivTouchImage.setOnTouchListener(object : OnSwipeTouchListener(mContext) {
 
             override fun onSwipeUp() {
                 super.onSwipeUp()
-                if(!ivTouchImage.isZoomed) {
+                if (!ivTouchImage.isZoomed) {
                     postNotification()
                     closeFragment("up")
                 }
             }
             override fun onSwipeDown() {
                 super.onSwipeDown()
-                if(!ivTouchImage.isZoomed) {
+                if (!ivTouchImage.isZoomed) {
                     postNotification()
                     closeFragment("down")
                 }
@@ -197,23 +203,26 @@ class ImageFragment : Fragment() {
         }
         val share: ImageButton = binding.shareBtn
         val close: ImageButton = binding.closeBtn
-        if(!bShare) share.visibility = View.INVISIBLE
-        activity?.runOnUiThread( java.lang.Runnable {
-            val clickListener = View.OnClickListener { viewFS ->
-                when (viewFS.getId()) {
-                    R.id.shareBtn -> {
-                        val mShareImage: ShareImage = ShareImage()
-                        mShareImage.shareImage(image, appId, appContext, compressionQuality)
-                    }
-                    R.id.closeBtn -> {
-                        postNotification()
-                        closeFragment("no")
+        if (!bShare) share.visibility = View.INVISIBLE
+        activity?.runOnUiThread(
+            java.lang.Runnable {
+                val clickListener = View.OnClickListener { viewFS ->
+                    when (viewFS.getId()) {
+                        R.id.shareBtn -> {
+                            val mShareImage: ShareImage = ShareImage()
+                            mShareImage.shareImage(image, appId, appContext, compressionQuality)
+                        }
+
+                        R.id.closeBtn -> {
+                            postNotification()
+                            closeFragment("no")
+                        }
                     }
                 }
+                share.setOnClickListener(clickListener)
+                close.setOnClickListener(clickListener)
             }
-            share.setOnClickListener(clickListener)
-            close.setOnClickListener(clickListener)
-        })
+        )
         return binding.root
     }
 
@@ -223,14 +232,16 @@ class ImageFragment : Fragment() {
         super.onDestroyView()
     }
     private fun clearCache() {
-        Thread(Runnable {
-            Glide.get(appContext).clearDiskCache()
-        }).start()
+        Thread(
+            Runnable {
+                Glide.get(appContext).clearDiskCache()
+            }
+        ).start()
         Glide.get(appContext).clearMemory()
     }
     private fun closeFragment(swipeDirection: String) {
         if (swipeDirection == "no") {
-            activity?.supportFragmentManager?.beginTransaction()?.remove(mFragment)?.commit();
+            activity?.supportFragmentManager?.beginTransaction()?.remove(mFragment)?.commit()
         }
         val animationId = when (swipeDirection) {
             "up" -> R.anim.slide_up
@@ -246,7 +257,7 @@ class ImageFragment : Fragment() {
             override fun onAnimationRepeat(animation: Animation?) {}
             override fun onAnimationEnd(animation: Animation?) {
                 // Remove the fragment or perform any other necessary actions
-                activity?.supportFragmentManager?.beginTransaction()?.remove(mFragment)?.commit();
+                activity?.supportFragmentManager?.beginTransaction()?.remove(mFragment)?.commit()
             }
         })
         // Start the animation on your view

@@ -13,10 +13,10 @@ public class PhotoViewerPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "PhotoViewerPlugin"
     public let jsName = "PhotoViewer"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "show", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "saveImageFromHttpToInternal", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getInternalImagePaths", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "echo", returnType: .promise),
+        CAPPluginMethod(name: "show", returnType: .promise),
+        CAPPluginMethod(name: "saveImageFromHttpToInternal", returnType: .promise),
+        CAPPluginMethod(name: "getInternalImagePaths", returnType: .promise)
     ]
     private var implementation: PhotoViewer?
     var exitObserver: Any?

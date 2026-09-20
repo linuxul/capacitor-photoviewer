@@ -17,8 +17,8 @@ import com.getcapacitor.community.media.photoviewer.databinding.FragmentGalleryF
 import com.getcapacitor.community.media.photoviewer.helper.DepthPageTransformer
 import com.getcapacitor.community.media.photoviewer.helper.ZoomOutPageTransformer
 
-class GalleryFullscreenFragment: DialogFragment() {
-    private val TAG = "GalleryFullscrFragment"
+public class GalleryFullscreenFragment : DialogFragment() {
+    private val logTag = "GalleryFullscrFragment"
     private var fsFragmentBinding: FragmentGalleryFullscreenBinding? = null
     private var imageList: ArrayList<Image> = ArrayList()
     private var selectedPosition: Int = 0
@@ -34,35 +34,42 @@ class GalleryFullscreenFragment: DialogFragment() {
     private lateinit var curTransf: ViewPager2.PageTransformer
     private var options = JSObject()
 
-    fun setImageList(imageList: ArrayList<Image>) {
+    public fun setImageList(imageList: ArrayList<Image>) {
         this.imageList = imageList
     }
-    fun setMode(mode: String) {
+    public fun setMode(mode: String) {
         this.mode = mode
     }
-    fun setStartFrom(position: Int) {
+    public fun setStartFrom(position: Int) {
         this.selectedPosition = position
     }
-    fun setOptions(options: JSObject) {
+    public fun setOptions(options: JSObject) {
         this.options = options
-        if(this.options.has("transformer")) transformer = this.options
-            .getString("transformer").toString()
-        if(this.options.has("share")) bShare = this.options.getBoolean("share")
-        if(this.options.has("title")) bTitle = this.options.getBoolean("title")
-        if(this.options.has("maxzoomscale")) maxZoomScale = this.options
-            .getDouble("maxzoomscale")
-        if(this.options.has("compressionquality")) compressionQuality = this.options
-            .getDouble("compressionquality")
-        if(this.options.has("backgroundcolor")) backgroundColor = this.options
-            .getString("backgroundcolor").toString()
-        if (this.options.has("customHeaders")) customHeaders = this.options
+        if (this.options.has("transformer")) {
+            transformer = this.options
+                .getString("transformer").toString()
+        }
+        if (this.options.has("share")) bShare = this.options.getBoolean("share")
+        if (this.options.has("title")) bTitle = this.options.getBoolean("title")
+        if (this.options.has("maxzoomscale")) {
+            maxZoomScale = this.options
+                .getDouble("maxzoomscale")
+        }
+        if (this.options.has("compressionquality")) {
+            compressionQuality = this.options
+                .getDouble("compressionquality")
+        }
+        if (this.options.has("backgroundcolor")) {
+            backgroundColor = this.options
+                .getString("backgroundcolor").toString()
+        }
+        if (this.options.has("customHeaders")) {
+            customHeaders = this.options
                 .getJSObject("customHeaders")!!
+        }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val binding = FragmentGalleryFullscreenBinding
             .inflate(inflater, container, false)
@@ -72,32 +79,34 @@ class GalleryFullscreenFragment: DialogFragment() {
         viewPager.adapter = pagerAdapter
         setCurrentItem(selectedPosition)
         curTransf = ZoomOutPageTransformer()
-        if(transformer.equals("depth")) curTransf = DepthPageTransformer()
+        if (transformer.equals("depth")) curTransf = DepthPageTransformer()
         viewPager.setPageTransformer(curTransf)
 
         val view = binding.root
-        activity?.runOnUiThread( java.lang.Runnable {
-            view.isFocusableInTouchMode = true;
-            view.requestFocus();
-            view.setOnKeyListener(object: View.OnKeyListener {
-                override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
-                    // if the event is a key down event on the enter button
-                    if (event.action == KeyEvent.ACTION_DOWN &&
-                        keyCode == KeyEvent.KEYCODE_BACK
-                    ) {
-                        backPressed()
-                        return true
+        activity?.runOnUiThread(
+            java.lang.Runnable {
+                view.isFocusableInTouchMode = true
+                view.requestFocus()
+                view.setOnKeyListener(object : View.OnKeyListener {
+                    override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                        // if the event is a key down event on the enter button
+                        if (event.action == KeyEvent.ACTION_DOWN &&
+                            keyCode == KeyEvent.KEYCODE_BACK
+                        ) {
+                            backPressed()
+                            return true
+                        }
+                        return false
                     }
-                    return false
-                }
-            })
-        })
+                })
+            }
+        )
 
         return view
     }
 
     private fun backPressed() {
-        if(mode == "slider") {
+        if (mode == "slider") {
             postNotification()
         }
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
@@ -111,7 +120,7 @@ class GalleryFullscreenFragment: DialogFragment() {
         var info: MutableMap<String, Any> = mutableMapOf()
         info["result"] = true
         info["imageIndex"] = selectedPosition
-        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info);
+        NotificationCenter.defaultCenter().postNotification("photoviewerExit", info)
     }
 
     private fun setCurrentItem(position: Int) {
@@ -123,10 +132,10 @@ class GalleryFullscreenFragment: DialogFragment() {
 
         override fun createFragment(position: Int): Fragment {
             val image: Image = imageList.get(position)
-            return ScreenSlidePageFragment.getInstance(image, mode, position, bShare, bTitle, maxZoomScale,
-                compressionQuality, backgroundColor, customHeaders)
-
+            return ScreenSlidePageFragment.getInstance(
+                image, mode, position, bShare, bTitle, maxZoomScale,
+                compressionQuality, backgroundColor, customHeaders
+            )
         }
     }
-
 }

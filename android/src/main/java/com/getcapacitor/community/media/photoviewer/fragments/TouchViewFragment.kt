@@ -5,7 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.core.view.GestureDetectorCompat
 import androidx.fragment.app.DialogFragment
@@ -19,30 +23,25 @@ import com.getcapacitor.community.media.photoviewer.helper.ImageToBeLoaded
 import com.ortiz.touchview.TouchImageView
 import java.io.File
 
-
-class TouchViewFragment(private val callbackListener: CallbackListener): DialogFragment() {
-    private val TAG = "TouchViewFragment"
+public class TouchViewFragment(private val callbackListener: CallbackListener) : DialogFragment() {
+    private val logTag = "TouchViewFragment"
     private var tvFragmentBinding: FragmentTouchviewBinding? = null
-    lateinit var ivTouchImage: TouchImageView
-    lateinit var  appContext: Context
+    public lateinit var ivTouchImage: TouchImageView
+    public lateinit var appContext: Context
     private var url: String = ""
     private lateinit var rlLayout: RelativeLayout
     private lateinit var mDetector: GestureDetectorCompat
     private var options = JSObject()
     private var backgroundColor: String = "black"
 
-    fun setUrl(url: String) {
+    public fun setUrl(url: String) {
         this.url = url
     }
-    fun setBackgroundColor(color: String) {
+    public fun setBackgroundColor(color: String) {
         this.backgroundColor = color
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val binding = FragmentTouchviewBinding
             .inflate(inflater, container, false)
@@ -90,7 +89,9 @@ class TouchViewFragment(private val callbackListener: CallbackListener): DialogF
                 callbackListener.onMenuToggle()
                 dismiss()
                 true // pretend we've processed it
-            } else false // pass on to be processed as normal
+            } else {
+                false // pass on to be processed as normal
+            }
         }
         // Call super onResume after sizing
         super.onResume()
@@ -99,5 +100,4 @@ class TouchViewFragment(private val callbackListener: CallbackListener): DialogF
         tvFragmentBinding = null
         super.onDestroyView()
     }
-
 }
