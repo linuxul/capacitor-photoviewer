@@ -5,6 +5,7 @@ import com.getcapacitor.JSObject
 import com.getcapacitor.PermissionState
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
+import com.getcapacitor.PluginException
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
@@ -31,12 +32,11 @@ public class PhotoViewerPlugin : Plugin() {
 
     @PermissionCallback
     private fun imagesPermissionsCallback(call: PluginCall) {
-        if (isImagesPermissions()) {
-            isPermissions = true
-            show(call)
-        } else {
-            call.reject(PERMISSION_DENIED_ERROR)
+        if (!isImagesPermissions()) {
+            throw PluginException(PERMISSION_DENIED_ERROR)
         }
+        isPermissions = true
+        show(call)
     }
 
     private fun isImagesPermissions(): Boolean = getPermissionState(MEDIAIMAGES) == PermissionState.GRANTED
@@ -53,13 +53,11 @@ public class PhotoViewerPlugin : Plugin() {
     @PluginMethod
     public fun show(call: PluginCall) {
         if (!call.data.has("images")) {
-            rHandler.retResult(call, false, "Show: Must provide an image list")
-            return
+            throw PluginException("Show: Must provide an image list")
         }
         val images = call.getArray("images")
         if (images == null || images.length() == 0) {
-            rHandler.retResult(call, false, "Show: Must provide a non-empty list of image")
-            return
+            throw PluginException("Show: Must provide a non-empty list of image")
         }
         val options = (if (call.data.has("options")) call.getObject("options", JSObject()) else null) ?: JSObject()
         val mode = if (call.data.has("mode")) call.getString("mode") else "one"
